@@ -213,6 +213,7 @@ Sessões incluídas:
 | Sessão | Para quê |
 |---|---|
 | `general` | Perguntas que caem em quase qualquer vaga. Não precisa de LLM. |
+| `tech_profile` | As 70 perguntas mais frequentes em entrevistas em inglês (+ as suas perguntas), respondidas com o seu perfil tech: Python, dados, Django/FastAPI, React. |
 | `vendor_data_platform` | Exemplo completo, feito à mão, para uma vaga real de Senior Software Engineer. |
 | as suas | Geradas para **qualquer vaga** com o Ollama (abaixo). |
 

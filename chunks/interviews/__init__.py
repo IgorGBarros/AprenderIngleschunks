@@ -1,6 +1,6 @@
 """Sessões de entrevista: perguntas prováveis + respostas modelo.
 
-Há sessões prontas (``general``, ``vendor_data_platform``) e sessões geradas
+Há sessões prontas (``general``, ``tech_profile``, ``vendor_data_platform``) e sessões geradas
 para qualquer vaga com o Ollama (``python -m chunks vaga``), salvas em
 ``chunks/interviews/generated/``.
 
@@ -104,7 +104,7 @@ def from_dict(data: dict) -> Session:
 
 
 # Sessões prontas, depois as geradas com o Ollama (chunks/interviews/generated/*.json).
-from chunks.interviews import general, vendor_data_platform  # noqa: E402,F401
+from chunks.interviews import general, tech_profile, vendor_data_platform  # noqa: E402,F401
 from chunks.interviews.generate import load_all as _load_generated  # noqa: E402
 
 for _session in _load_generated():
