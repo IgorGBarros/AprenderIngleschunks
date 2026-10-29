@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import prompts from "../data/interview_prompts.json";
 import { fixMarkup, generateSession, normalizeQuestions, parseSession, slugify } from "./generate";
-import { OllamaError, listModels, normalizeHost } from "./ollama";
+import { DEFAULT_HOST, OllamaError, defaultHost, listModels, normalizeHost } from "./ollama";
 
 const JOB = "We are hiring a Data Engineer to build pipelines in Python and SQL. ".repeat(3);
 
@@ -94,5 +94,16 @@ describe("helpers", () => {
     const ok = { id: "x", title: "X", company: "", summary: "", stages: [{ id: "a", title: "A", description: "" }], questions: [{ id: "q", stage: "a", en: "Q?", goal: "", answer: "A", tips: [], follow_ups: [] }] };
     expect(parseSession(JSON.stringify(ok)).id).toBe("x");
     expect(() => parseSession(JSON.stringify({ ...ok, questions: [{ ...ok.questions[0], stage: "b" }] }))).toThrow("inválidas");
+  });
+});
+
+describe("defaultHost", () => {
+  it("usa o Ollama local em localhost e o /ollama do próprio servidor fora dele", () => {
+    expect(defaultHost({ hostname: "localhost", origin: "http://localhost:5173" })).toBe(DEFAULT_HOST);
+    expect(defaultHost({ hostname: "127.0.0.1", origin: "http://127.0.0.1:4173" })).toBe(DEFAULT_HOST);
+    expect(defaultHost({ hostname: "vps.tail1234.ts.net", origin: "https://vps.tail1234.ts.net" })).toBe(
+      "https://vps.tail1234.ts.net/ollama",
+    );
+    expect(normalizeHost("https://vps.tail1234.ts.net/ollama/")).toBe("https://vps.tail1234.ts.net/ollama");
   });
 });

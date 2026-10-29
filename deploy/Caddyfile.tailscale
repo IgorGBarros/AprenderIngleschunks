@@ -1,0 +1,7 @@
+# Modo Tailscale: o Caddy só escuta na própria VPS (127.0.0.1:8080).
+# Quem publica é o `tailscale serve`, com HTTPS, e só para os seus aparelhos.
+
+:8080 {
+	bind 127.0.0.1
+	import chunks.caddy
+}

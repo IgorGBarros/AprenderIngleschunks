@@ -1,0 +1,41 @@
+# Comum aos dois modos (Tailscale e domínio): os arquivos do app e o Ollama em /ollama.
+# O setup-vps.sh copia este arquivo para /etc/caddy/chunks.caddy.
+
+root * /var/www/chunks
+encode zstd gzip
+
+# Não aparecer em buscadores.
+handle /robots.txt {
+	respond "User-agent: *
+Disallow: /
+"
+}
+
+# O app chama o Ollama no mesmo endereço (https://.../ollama): sem CORS e sem
+# "conteúdo misto" (página HTTPS chamando HTTP), que o navegador bloqueia.
+@ollama path /ollama /ollama/*
+handle @ollama {
+	uri strip_prefix /ollama
+	reverse_proxy __OLLAMA__ {
+		# O Ollama só aceita pedidos que parecem locais.
+		header_up Host localhost:11434
+		header_up -Origin
+		header_up -Referer
+	}
+}
+
+handle {
+	# index.html, sw.js e manifesto sempre revalidados: o app atualiza sozinho.
+	@fresh path / /index.html /sw.js /manifest.webmanifest
+	header @fresh Cache-Control "no-cache"
+	# Arquivos com hash no nome nunca mudam.
+	header /assets/* Cache-Control "public, max-age=31536000, immutable"
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		# Não aparecer em buscadores.
+		X-Robots-Tag "noindex, nofollow"
+	}
+	try_files {path} /index.html
+	file_server
+}

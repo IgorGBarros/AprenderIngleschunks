@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { generateSession, parseSession } from "../lib/generate";
 import type { Session } from "../lib/interviews";
-import { DEFAULT_HOST, DEFAULT_MODEL, listModels } from "../lib/ollama";
+import { DEFAULT_MODEL, defaultHost, listModels } from "../lib/ollama";
 import { load, save } from "../lib/storage";
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 export function NewJob({ takenIds, onCreated, onCancel }: Props) {
   const [job, setJob] = useState(() => load("chunks.job.draft", ""));
   const [profile, setProfile] = useState(() => load("chunks.profile", ""));
-  const [host, setHost] = useState(() => load("chunks.ollama.host", DEFAULT_HOST));
+  const [host, setHost] = useState(() => load("chunks.ollama.host", defaultHost()));
   const [model, setModel] = useState(() => load("chunks.ollama.model", DEFAULT_MODEL));
   const [perStage, setPerStage] = useState(5);
   const [models, setModels] = useState<string[] | null>(null);

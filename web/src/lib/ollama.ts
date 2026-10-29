@@ -3,6 +3,14 @@
 export const DEFAULT_HOST = "http://localhost:11434";
 export const DEFAULT_MODEL = "qwen2.5:7b";
 
+/**
+ * Endereço padrão: em localhost, o Ollama local; publicado na VPS, o próprio
+ * servidor em /ollama (o Caddy repassa para o Ollama, ver deploy/).
+ */
+export function defaultHost(loc: Pick<Location, "hostname" | "origin"> = location): string {
+  return /^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc.hostname) ? DEFAULT_HOST : `${loc.origin}/ollama`;
+}
+
 export class OllamaError extends Error {}
 
 export interface OllamaConfig {

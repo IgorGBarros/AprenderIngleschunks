@@ -312,10 +312,15 @@ python -m chunks json
 
 (Os testes do Python falham se você esquecer.)
 
-**Publicar no GitHub Pages:** o workflow `.github/workflows/web.yml` testa e
-publica o app a cada push na branch `main`. Antes, ative em *Settings › Pages ›
-Source: GitHub Actions*. O endereço fica
-`https://<seu-usuário>.github.io/AprenderIngl-schunks/`.
+**Instalar no celular (privado, na sua VPS):** veja
+[`deploy/README.md`](deploy/README.md). Lá está como hospedar o app numa VPS
+(ex.: Oracle Cloud), visível só para os seus aparelhos (Tailscale) ou protegido
+por senha, e instalá-lo na tela inicial do Android ou do iPhone.
+
+**GitHub Pages (público):** o workflow `.github/workflows/web.yml` só publica no
+Pages se você criar a variável `GITHUB_PAGES` com o valor `true` (*Settings ›
+Secrets and variables › Actions › Variables*) e ativar *Settings › Pages ›
+Source: GitHub Actions*. Qualquer pessoa com o endereço consegue abrir.
 
 ## Criando os seus chunks
 

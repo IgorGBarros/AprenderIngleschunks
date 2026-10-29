@@ -1,0 +1,5 @@
+# Scripts e configs que rodam na VPS (Linux): sempre com fim de linha LF,
+# mesmo quando o repositório é clonado no Windows.
+*.sh text eol=lf
+*.caddy text eol=lf
+deploy/Caddyfile.* text eol=lf

@@ -1,0 +1,12 @@
+# Modo domínio: HTTPS automático (Let's Encrypt) e tudo protegido por usuário e senha.
+
+__DOMAIN__ {
+	# Manifesto e ícones ficam abertos: o celular busca esses arquivos sem a
+	# senha, e sem eles o "Instalar app" não aparece. Eles não têm conteúdo seu.
+	@private not path /manifest.webmanifest /icon.svg /icon-192.png /icon-512.png /robots.txt
+	basic_auth @private {
+		__USER__ __HASH__
+	}
+
+	import chunks.caddy
+}
