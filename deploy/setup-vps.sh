@@ -6,7 +6,8 @@
 #   sudo bash setup-vps.sh domain chunks.seudominio.com igor   # domínio próprio + senha
 #
 # Opções (depois do modo):
-#   --ollama                 instala o Ollama na própria VPS
+#   --ollama                 instala o Ollama na própria VPS e baixa o modelo
+#   --modelo NOME            modelo a baixar com --ollama (padrão: qwen2.5:7b)
 #   --ollama-upstream IP:PORTA  usa um Ollama em outra máquina (ex.: o seu PC na Tailscale)
 #
 # Pode rodar de novo para trocar de modo ou de senha: ele só reescreve a configuração.
@@ -14,7 +15,7 @@
 set -euo pipefail
 
 usage() {
-  sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'
   exit 1
 }
 
@@ -34,10 +35,12 @@ case "$MODE" in
 esac
 
 INSTALL_OLLAMA=0
+MODEL="qwen2.5:7b"
 OLLAMA_UPSTREAM="127.0.0.1:11434"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --ollama) INSTALL_OLLAMA=1 ;;
+    --modelo) MODEL="${2:?informe o modelo}"; shift ;;
     --ollama-upstream) OLLAMA_UPSTREAM="${2:?informe IP:PORTA}"; shift ;;
     *) usage ;;
   esac
@@ -115,7 +118,20 @@ setup_ollama() {
     step "Instalando o Ollama"
     curl -fsSL https://ollama.com/install.sh | sh
   fi
-  echo "Baixe um modelo, por exemplo: ollama pull qwen2.5:7b"
+  # Mantém o modelo carregado na RAM por 1 h: carregar do disco a cada pedido
+  # custa caro na CPU. Continua escutando só em 127.0.0.1 (o Caddy repassa).
+  mkdir -p /etc/systemd/system/ollama.service.d
+  cat > /etc/systemd/system/ollama.service.d/chunks.conf <<'CONF'
+[Service]
+Environment="OLLAMA_KEEP_ALIVE=1h"
+Environment="OLLAMA_NUM_PARALLEL=1"
+CONF
+  systemctl daemon-reload
+  systemctl enable -q ollama
+  systemctl restart ollama
+  for _ in $(seq 30); do ollama list >/dev/null 2>&1 && break; sleep 1; done
+  step "Baixando o modelo $MODEL (alguns GB, pode demorar)"
+  ollama pull "$MODEL"
 }
 
 # ------------------------------------------------------------- configuração

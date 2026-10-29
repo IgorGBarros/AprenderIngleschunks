@@ -145,17 +145,31 @@ O app chama o Ollama no mesmo endereço, em `https://.../ollama`, e o Caddy
 repassa o pedido para o Ollama. Em *+ Nova vaga › Configurar Ollama*, o
 endereço já vem preenchido assim. Você escolhe onde o Ollama roda:
 
-- **Na VPS:** rode o setup com `--ollama` e depois `ollama pull qwen2.5:7b`.
+- **Na VPS (recomendado na VPS grátis ARM, 24 GB de RAM e 200 GB de disco):**
+  rode o setup com `--ollama`. Ele instala o Ollama, baixa o modelo e deixa o
+  modelo carregado na memória por 1 hora, para os próximos pedidos saírem mais
+  rápido. O Ollama só escuta dentro da VPS: quem chega até ele é o Caddy, que já
+  está protegido (Tailscale ou senha).
 
   ```bash
   sudo bash ~/chunks-deploy/setup-vps.sh tailscale --ollama
   ```
 
-  Só vale a pena na VPS **Ampere A1 (ARM)** do plano grátis, com até 4 CPUs e
-  24 GB de RAM. Sem placa de vídeo, gerar uma entrevista leva alguns minutos.
-  Se `qwen2.5:3b` gerar respostas boas o suficiente, ele é bem mais rápido. A
-  VPS pequena (AMD, 1 GB de RAM) não roda o Ollama.
-- **No seu PC (opção A):** o PC faz o trabalho pesado e a VPS só repassa o
+  Escolha o modelo com `--modelo`. Para trocar depois, rode
+  `ollama pull NOME` na VPS e escolha o modelo em *Configurar Ollama* no app.
+
+  | Modelo | Tamanho | Na VPS (4 CPUs ARM, sem placa de vídeo) |
+  |---|---|---|
+  | `qwen2.5:3b` | ~2 GB | O mais rápido. Às vezes erra o formato; é só gerar de novo. |
+  | `qwen2.5:7b` (padrão) | ~5 GB | Bom equilíbrio. Uma entrevista leva alguns minutos. |
+  | `qwen2.5:14b` | ~9 GB | Respostas melhores, mas cerca de 2x mais lento que o 7b. |
+
+  Os 24 GB de RAM e os 200 GB de disco cabem com folga em qualquer um deles,
+  até em vários ao mesmo tempo. O gargalo é a CPU. Confira no painel da Oracle
+  se a VPS está com as **4 OCPUs** do plano grátis: com menos, fica
+  proporcionalmente mais lento. Enquanto gera, o app mostra o progresso etapa
+  por etapa; pode deixar a tela aberta.
+- **No seu PC (opção A, se ele tiver placa de vídeo):** o PC faz o trabalho pesado e a VPS só repassa o
   pedido.
   1. Instale a Tailscale no PC.
   2. No PC, faça o Ollama aceitar conexões da rede. No Windows, crie a
